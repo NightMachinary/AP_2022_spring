@@ -1,0 +1,404 @@
+#+TITLE: functional_workshop/others
+
+* tail call optimization
+#+begin_example
+1 1 2 3 5 8 13 ...
+#+end_example
+
+#+begin_src jupyter-racket :session r1
+(require racket/trace)
+
+(define (fib n)
+  (cond
+    [(= n 0) 1]
+    [(= n 1) 1]
+    [else (+ (fib (- n 1)) (fib (- n 2)))]
+    ))
+
+(trace fib)
+(fib 4)
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: >(fib 4)
+: > (fib 3)
+: > >(fib 2)
+: > > (fib 1)
+: < < 1
+: > > (fib 0)
+: < < 1
+: < <2
+: > >(fib 1)
+: < <1
+: < 3
+: > (fib 2)
+: > >(fib 1)
+: < <1
+: > >(fib 0)
+: < <1
+: < 2
+: <5
+: 5
+:END:
+
+#+begin_src jupyter-racket :session r1
+(define (fib-tco-h n prev1 prev2)
+  (cond
+    [(= n 0) prev1]
+    [(= n 1) (+ prev1 prev2)]
+    [else (fib-tco-h (- n 1) (+ prev1 prev2) prev1)]
+    ))
+
+(define (fib-tco n)
+  (fib-tco-h n 1 0))
+
+(trace fib-tco-h)
+(fib-tco 4)
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: >(fib-tco-h 4 1 0)
+: >(fib-tco-h 3 1 1)
+: >(fib-tco-h 2 2 1)
+: >(fib-tco-h 1 3 2)
+: <5
+: 5
+:END:
+
+* closures
+#+begin_src jupyter-racket :session r1
+(define (counter-maker)
+  (define counter 0)
+  (lambda ()
+    (set! counter (+ counter 1))
+    counter
+    ))
+
+(define c (counter-maker))
+(define c2 (counter-maker))
+
+(println (c))
+(println (c2))
+(println (c))
+(println (c))
+(println (c2))
+(println (c2))
+#+end_src
+
+#+RESULTS:
+: 1
+: 1
+: 2
+: 3
+: 2
+: 3
+
+* multiple dispatch (multimethods, functional polymorphism)
+#+begin_src jupyter-racket :session r1
+(require multimethod)
+(require racket/function)
+
+; a scalar value
+(struct num (val))
+
+; an n-dimensional vector value
+(struct vec (vals))
+
+; generic multiplication operator
+(define-generic (mul a b))
+
+(define-instance ((mul num num) x y)
+    (num (* (num-val x) (num-val y))))
+
+(define-instance ((mul num vec) n v)
+    (vec (map (curry * (num-val n)) (vec-vals v))))
+(define-instance ((mul vec num) v n)
+    (mul n v))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-racket :session r1
+(println (mul (num 6) (num 8)))
+#+end_src
+
+#+RESULTS:
+: (num 48)
+
+#+begin_src jupyter-racket :session r1
+(println (mul (num 2) (vec '(3 12))))
+#+end_src
+
+#+RESULTS:
+: (vec '(6 24))
+
+#+begin_src jupyter-racket :session r1
+(println (mul (vec '(3 12)) (num 2)))
+#+end_src
+
+#+RESULTS:
+: (vec '(6 24))
+
+* continuations
+#+begin_src jupyter-racket :session r1 :pandoc t
+(define *k* #f)
+
+(call-with-continuation-prompt
+ (lambda ()
+   (+ 10 (call-with-composable-continuation
+          (lambda (here)
+            (set! *k* here)
+            9)))
+   ))
+
+(println (*k* 8))
+(println (*k* 0))
+#+end_src
+
+#+RESULTS:
+: 18
+: 10
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(define *k* #f)
+
+(call-with-continuation-prompt
+ (lambda ()
+   (println "begins") ;; Side-effects before the bookmarked expression are not re-evaluated!
+
+   (+ 10 (call-with-composable-continuation
+          (lambda (here)
+            (set! *k* here)
+            9)))
+
+   (println "end?")
+
+   91
+   ))
+
+(println (*k* 8))
+(println (*k* 0))
+#+end_src
+
+#+RESULTS:
+: "begins"
+: "end?"
+: "end?"
+: 91
+: "end?"
+: 91
+
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(let ((a 0))
+  (define *k* #f)
+  (define *c* 0)
+
+  (println "begins")
+
+  (+ 100
+   (+ 1 2 3
+      (call-with-composable-continuation
+       (λ (k)
+         (set! *k* k)
+         0))))
+
+  (when (< *c* 3)
+    (printf "*c*: ~a~%" *c*)
+    (set! *c* (+ *c* 1))
+    (printf "(*k* 10): ~a~%" (*k* 10))
+    )
+
+  (println "end?")
+  (* *c* 10)
+  )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: "begins"
+: *c*: 0
+: *c*: 1
+: *c*: 2
+: "end?"
+: (*k* 10): 30
+: "end?"
+: (*k* 10): 30
+: "end?"
+: (*k* 10): 30
+: "end?"
+: 30
+:END:
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(let ((a 0))
+  (define *k* #f)
+  (define *c* 0)
+
+  (println "begins")
+
+  (call-with-continuation-prompt
+   (lambda ()
+     (+ 100
+      (+ 1 2 3
+         (call-with-composable-continuation
+          (λ (k)
+            (set! *k* k)
+            0))))))
+
+   (when (< *c* 3)
+     (printf "*c*: ~a~%" *c*)
+     (set! *c* (+ *c* 1))
+     (printf "(*k* 10): ~a~%" (*k* 10))
+     )
+
+   (println "end?")
+   (* *c* 10)
+   )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: "begins"
+: *c*: 0
+: (*k* 10): 116
+: "end?"
+: 10
+:END:
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(let ((a 0))
+  (define *k* #f)
+  (define *c* 0)
+
+  (println "begins")
+
+  (+ 100
+     (+ 1 2 3
+        (call/cc
+         (λ (k)
+           (set! *k* k)
+           0))))
+
+  (println "mid")
+
+  (when (< *c* 3)
+    (printf "*c*: ~a~%" *c*)
+    (set! *c* (+ *c* 1))
+    (printf "(*k* 10): ~a~%" (*k* 10))
+    )
+
+  (println "end?")
+  (* *c* 10)
+  )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: "begins"
+: "mid"
+: *c*: 0
+: "mid"
+: *c*: 1
+: "mid"
+: *c*: 2
+: "mid"
+: "end?"
+: 30
+:END:
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(let ((a 0))
+  (define *k* #f)
+  (define *c* 0)
+
+  (call-with-continuation-prompt
+   (lambda ()
+     (println "begins")
+
+     (+ 100
+        (+ 1 2 3
+           (call/cc
+            (λ (k)
+              (set! *k* k)
+              0))))
+
+     (println "mid")
+
+     (when (< *c* 3)
+       (printf "*c*: ~a~%" *c*)
+       (set! *c* (+ *c* 1))
+       (printf "(*k* 10): ~a~%" (*k* 10))
+       )
+
+     (println "end?")
+     (* *c* 10)
+     ))
+  )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: "begins"
+: "mid"
+: *c*: 0
+: "mid"
+: *c*: 1
+: "mid"
+: *c*: 2
+: "mid"
+: "end?"
+: 30
+:END:
+
+#+begin_src jupyter-racket :session r1 :pandoc t
+(let ((a 0))
+  (define *k* #f)
+  (define *c* 0)
+
+  (call-with-continuation-prompt
+   (lambda ()
+     (println "begins")
+
+     (+ 100
+        (+ 1 2 3
+           (call-with-composable-continuation
+            (λ (k)
+              (set! *k* k)
+              0))))
+
+     (println "mid")
+
+     (when (< *c* 3)
+       (printf "*c*: ~a~%" *c*)
+       (set! *c* (+ *c* 1))
+       (printf "(*k* 10): ~a~%" (*k* 10))
+       )
+
+     (println "end?")
+     (* *c* 10)
+     ))
+  )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: "begins"
+: "mid"
+: *c*: 0
+: "mid"
+: *c*: 1
+: "mid"
+: *c*: 2
+: "mid"
+: "end?"
+: (*k* 10): 30
+: "end?"
+: (*k* 10): 30
+: "end?"
+: (*k* 10): 30
+: "end?"
+: 30
+:END:

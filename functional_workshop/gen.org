@@ -1,0 +1,10 @@
+* @todo
+** tail call optimization
+
+* @orally
+** functional (persistent) data structures
+
+** higher order control flow
+*** lambdas as a way to delay evaluation
+
+

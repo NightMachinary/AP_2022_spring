@@ -1,5 +1,4 @@
-* @todo
-** tail call optimization
+#+TITLE: functional_workshop/gen
 
 * @orally
 ** functional (persistent) data structures

@@ -5,7 +5,7 @@
 1 1 2 3 5 8 13 ...
 #+end_example
 
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (require racket/trace)
 
 (define (fib n)
@@ -42,7 +42,7 @@
 : 5
 :END:
 
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (define (fib-tco-h n prev1 prev2)
   (cond
     [(= n 0) prev1]
@@ -68,7 +68,7 @@
 :END:
 
 * closures
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (define (counter-maker)
   (define counter 0)
   (lambda ()
@@ -96,7 +96,7 @@
 : 3
 
 * multiple dispatch (multimethods, functional polymorphism)
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (require multimethod)
 (require racket/function)
 
@@ -120,21 +120,21 @@
 
 #+RESULTS:
 
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (println (mul (num 6) (num 8)))
 #+end_src
 
 #+RESULTS:
 : (num 48)
 
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (println (mul (num 2) (vec '(3 12))))
 #+end_src
 
 #+RESULTS:
 : (vec '(6 24))
 
-#+begin_src jupyter-racket :session r1
+#+begin_src jupyter-racket :exports both :session r1
 (println (mul (vec '(3 12)) (num 2)))
 #+end_src
 
@@ -142,7 +142,7 @@
 : (vec '(6 24))
 
 * continuations
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (define *k* #f)
 
 (call-with-continuation-prompt
@@ -161,7 +161,7 @@
 : 18
 : 10
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (define *k* #f)
 
 (call-with-continuation-prompt
@@ -191,7 +191,7 @@
 : 91
 
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (let ((a 0))
   (define *k* #f)
   (define *c* 0)
@@ -232,7 +232,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (let ((a 0))
   (define *k* #f)
   (define *c* 0)
@@ -268,7 +268,7 @@
 : 10
 :END:
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (let ((a 0))
   (define *k* #f)
   (define *c* 0)
@@ -309,7 +309,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (let ((a 0))
   (define *k* #f)
   (define *c* 0)
@@ -353,7 +353,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :session r1 :pandoc t
+#+begin_src jupyter-racket :exports both :session r1 :pandoc t
 (let ((a 0))
   (define *k* #f)
   (define *c* 0)

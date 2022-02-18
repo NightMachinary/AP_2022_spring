@@ -1,0 +1,105 @@
+#+TITLE: functional_workshop/Scala
+
+* *links*
+** [[https://www.baeldung.com/scala/category/functional-programming][Functional Programming | Baeldung on Scala]]
+- Lambda Expressions in Scala
+- Case Objects vs Enumerations in Scala
+- Functors in Functional Programming
+- Introduction to Functional Programming in Scala
+- Introduction to FS2: Functional Streams for Scala
+- Monads in Scala
+- Introduction to Scalaz
+- Scala – Introduction to Cats
+- Introduction to Slick
+- Monoids and Semigroups in Scala
+
+* cons cells (singly-linked lists)
+#+begin_quote
+The list construction methods :: and ::: are special. Because they end in a colon, they are bound to their right operand. That is, an operation such as x :: xs is treated as the method call xs.::(x), not x.::(xs). In fact, x.::(xs) would not make sense, as x is of the list element type, which can be arbitrary, so we cannot assume that this type would have a :: method. For this reason, the :: method should take an element value and yield a new list.
+#+end_quote
+
+#+begin_src jupyter-scala :session s1 :async yes :pandoc t :exports both
+val mainList = List(3, 2, 1);
+val with4 =    4 :: mainList;  // re-uses mainList, costs one :: instance
+val with42 =   42 :: mainList; // also re-uses mainList, cost one :: instance
+val shorter =  mainList.tail;  // costs nothing as it uses the same 2::1::Nil instances as mainList
+
+printf("with4.tail eq mainList: %s\n\n", with4.tail eq mainList);
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: with4.tail eq mainList: true
+:
+: mainList: List[Int] = List(3, 2, 1)
+: with4: List[Int] = List(4, 3, 2, 1)
+: with42: List[Int] = List(42, 3, 2, 1)
+: shorter: List[Int] = List(2, 1)
+:END:
+
+#+begin_src jupyter-scala :session s1 :async yes :pandoc t :exports both
+def reverse[T](lst: List[T]): List[T] = {
+  lst match {
+    case Nil => Nil
+    case (first :: rest) => (reverse(rest) ::: List(first))
+  }
+}
+
+reverse(List(1,2,3,4,5))
+#+end_src
+
+#+RESULTS:
+: defined function reverse
+: res19_1: List[Int] = List(5, 4, 3, 2, 1)
+
+* tail call optimization
+#+begin_src jupyter-scala :session s1 :async yes :pandoc t :exports both
+@annotation.tailrec
+def reverse[T](lst: List[T]): List[T] = {
+  lst match {
+    case Nil => Nil
+    case (first :: rest) => (reverse(rest) ::: List(first))
+  }
+}
+
+reverse(List(1,2,3,4,5))
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: cmd19.sc:3: could not optimize @tailrec annotated method reverse: it contains a recursive call not in tail position
+:   lst match {
+:   ^Compilation Failed
+# [goto error]
+: Compilation Failed
+:END:
+
+#+begin_src jupyter-scala :session s1 :async yes :pandoc t :exports both
+@annotation.tailrec
+def reverse[T](lst: List[T], accu: List[T] = Nil): List[T] = {
+  lst match {
+    case Nil => accu
+    case (first :: rest) => reverse(lst.tail, first :: accu)
+  }
+}
+
+reverse(List(1,2,3,4,5))
+#+end_src
+
+#+RESULTS:
+: defined function reverse
+: res18_1: List[Int] = List(5, 4, 3, 2, 1)
+
+#+begin_src jupyter-scala :session s1 :async yes :pandoc t :exports both
+@annotation.tailrec
+def tailRecursiveLength[T](list: List[T], accumulator: Long = 0l): Long = list match {
+    case Nil => accumulator
+    case head :: tail => tailRecursiveLength(tail, accumulator + 1)
+}
+
+tailRecursiveLength(List(1,2,3,4,5))
+#+end_src
+
+#+RESULTS:
+: defined function tailRecursiveLength
+: res20_1: Long = 5L

@@ -1,0 +1,333 @@
+#+TITLE: Linux_workshop/gen
+
+* [[nightNotes:private/symlinks/dirs/learnxinyminutes-docs/bash.org][learnxinyminutes-docs/bash]]
+
+* variables
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+d=~/tmp/linux_workshop
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo "$d"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/tmp/linux_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+typeset -p d
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -g d=/Users/evar/tmp/linux_workshop
+#+end_results
+
+* navigation
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+mkdir -p "$d"
+cd "$d"
+pwd
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/tmp/linux_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d"
+##
+cd ..
+pwd
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/tmp
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd
+pwd
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d"
+##
+mkdir -p dir1 dir2
+cd ./dir1
+pwd
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/tmp/linux_workshop/dir1
+#+end_results
+
+* git
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d"
+##
+command rm -r -- bkmeans
+
+git clone https://github.com/gittar/bkmeans
+
+cd bkmeans
+ls
+#+end_src
+
+#+RESULTS:
+#+begin_results
+Cloning into 'bkmeans'...
+.
+..
+.git
+.gitignore
+LICENSE
+README.md
+bkmeans
+setup.py
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+cat LICENSE
+#+end_src
+
+#+RESULTS:
+#+begin_results
+Copyright (c) 2021 Bernd Fritzke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+echo "hi" > a.txt
+
+cat a.txt
+#+end_src
+
+#+RESULTS:
+#+begin_results
+hi
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git add a.txt
+git commit -m 'commit 1'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+[main 29d325f] commit 1
+ 1 file changed, 1 insertion(+)
+ create mode 100644 a.txt
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git branch branch_1 'HEAD~1'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git diff branch_1 HEAD
+#+end_src
+
+#+RESULTS:
+#+begin_results
+diff --git a/a.txt b/a.txt
+new file mode 100644
+index 0000000..45b983b
+--- /dev/null
++++ b/a.txt
+@@ -0,0 +1 @@
++hi
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git checkout branch_1
+#+end_src
+
+#+RESULTS:
+#+begin_results
+Switched to branch 'branch_1'
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+echo 'iced tea' > a.txt
+git add a.txt
+git commit -m 'commit_2'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+[branch_1 c28c4f9] commit_2
+ 1 file changed, 1 insertion(+)
+ create mode 100644 a.txt
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git branch branch_m 'HEAD'
+git checkout branch_m
+#+end_src
+
+#+RESULTS:
+#+begin_results
+Switched to branch 'branch_m'
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git branch | perl -pe 's/^\*/->/g' #: ignore perl for now
+#+end_src
+
+#+RESULTS:
+#+begin_results
+  branch_1
+-> branch_m
+  main
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git merge main
+#+end_src
+
+#+RESULTS:
+#+begin_results
+CONFLICT (add/add): Merge conflict in a.txt
+Auto-merging a.txt
+Automatic merge failed; fix conflicts and then commit the result.
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git ls-files --unmerged
+#+end_src
+
+#+RESULTS:
+#+begin_results
+100644 caecb05b91711006b07b10ddab77d65f2e2147be 2	a.txt
+100644 45b983be36b73c0788dc9cbcb76cbb80fc7bb057 3	a.txt
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+cat a.txt
+#+end_src
+
+#+RESULTS:
+#+begin_results
+<<<<<<< HEAD
+iced tea
+=======
+hi
+>>>>>>> main
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+echo 'Hi, iced tea!' > a.txt #: 'manually' resolving the conflict above
+git add a.txt
+git commit -m 'conflict resolved'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+[branch_m 89fa3b6] conflict resolved
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+git ls-files --unmerged
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+** @interactive =git rebase -i 'HEAD~4'=
+Switch to the main branch first, as the last commit resolves a conflict which will not go over well in the rebase.
+
+
+* =fd=
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+fd --type=file '.py'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+bkmeans/__init__.py
+bkmeans/bkmeans.py
+setup.py
+#+end_results
+
+* =parallel=
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$d/bkmeans"
+##
+fd --type=file '.py' | parallel -m -n1 echo File '{}' found.
+#+end_src
+
+#+RESULTS:
+#+begin_results
+File bkmeans/__init__.py found.
+File bkmeans/bkmeans.py found.
+File setup.py found.
+#+end_results
+
+* [[nightNotes:private/archive/ebooks/perl/perl one-liners.org][perl one-liners]]

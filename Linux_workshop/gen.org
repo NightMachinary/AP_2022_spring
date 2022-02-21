@@ -1,8 +1,216 @@
 #+TITLE: Linux_workshop/gen
 
-* [[nightNotes:private/symlinks/dirs/learnxinyminutes-docs/bash.org][learnxinyminutes-docs/bash]]
 
-* variables
+* zsh
+** [[nightNotes:private/symlinks/dirs/learnxinyminutes-docs/bash.org][learnxinyminutes-docs/bash]]
+
+** arguments, quoting
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger() { #: ignore the implementation for now
+  for arg in "$@"
+  do
+    print -r -- "arg: ${arg}"
+  done
+}
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger hello world
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello
+arg: world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'hello world'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "hello world"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger hello\ world
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'hello' 'world'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello
+arg: world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'hello
+world'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello
+world
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'hello "world"'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello "world"
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "hello 'world'"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello 'world'
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'hello \world\'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello \world\
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "hello \world\"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/var/folders/5v/g3zxt_7d64g3sd_56bzpqbvh0000gn/T/tmp.P7gF3pAOFj.zsh:1: unmatched "
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "hello \\world\\"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: hello \world\
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ''
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg:
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger '' '' ''
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg:
+arg:
+arg:
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ''\ ''\ ''
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg:
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger \
+# There is a space after the backslash. (courtesy of brish)
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger \  \
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg:
+arg:
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger '1\n2\n3'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: 1\n2\n3
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger $'1\n2\n3'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: 1
+2
+3
+#+end_results
+
+** the basic structure of commands
+#+begin_example zsh
+some_command -r --long-option --some-parameter=some_value --other-parameter some_other_value -- argument_1 argument_2
+#: -r is short for some longer option such as --recursive
+#+end_example
+
+*** =command some_command ...= ensures that we are running =some_commnd=, and not a shell function/alias/etc.
+
+*** Short options can often be combined:
+=-a -w -d= -> =-awd=
+
+*** Long options are better for readability.
+
+** variables
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 d=~/tmp/linux_workshop
 #+end_src
@@ -12,12 +220,12 @@ d=~/tmp/linux_workshop
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
-echo "$d"
+arger "$d"
 #+end_src
 
 #+RESULTS:
 #+begin_results
-/Users/evar/tmp/linux_workshop
+arg: /Users/evar/tmp/linux_workshop
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -28,6 +236,687 @@ typeset -p d
 #+begin_results
 typeset -g d=/Users/evar/tmp/linux_workshop
 #+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "Hello, ${d}!"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: Hello, /Users/evar/tmp/linux_workshop!
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger 'Hello, ${d}!'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: Hello, ${d}!
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger Hello, ${d}!
+# '!' might behave differently in a shell with history expansion active.
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: Hello,
+arg: /Users/evar/tmp/linux_workshop!
+#+end_results
+
+** lists
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+foo=( one 't w o' 3 '' 4 )
+
+arger "${foo[@]}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: one
+arg: t w o
+arg: 3
+arg:
+arg: 4
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ${foo[@]}
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: one
+arg: t w o
+arg: 3
+arg: 4
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${(@)foo}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: one
+arg: t w o
+arg: 3
+arg:
+arg: 4
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${foo[1,3]}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: one t w o 3
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${(@)foo[1,3]}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: one
+arg: t w o
+arg: 3
+#+end_results
+
+** command substitution
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+ls ..
+#+end_src
+
+#+RESULTS:
+#+begin_results
+.
+..
+.git
+Linux_workshop
+Untitled.ipynb
+functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+dirs="$(command ls ..)"
+
+typeset -p dirs
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -g dirs=$'Linux_workshop\nUntitled.ipynb\nfunctional_workshop'
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${dirs[@]}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: Linux_workshop
+Untitled.ipynb
+functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+dirs=("${(@ps.\n.)dirs}")
+typeset -p dirs
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -g -a dirs=( Linux_workshop Untitled.ipynb functional_workshop )
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${dirs[@]}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: Linux_workshop
+arg: Untitled.ipynb
+arg: functional_workshop
+#+end_results
+
+** foreach loops
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+for i in "${(@)foo}"
+do
+  echo "i: ${i}"
+done
+#+end_src
+
+#+RESULTS:
+#+begin_results
+i: one
+i: t w o
+i: 3
+i:
+i: 4
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+for i in "${(@)dirs}"
+do
+  command du -h ../"${i}"
+done
+#+end_src
+
+#+RESULTS:
+#+begin_results
+ 16K	../Linux_workshop
+4.0K	../Untitled.ipynb
+ 40K	../functional_workshop/.ipynb_checkpoints
+ 96K	../functional_workshop
+#+end_results
+
+** globbing
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger *
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: gen.org
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../Linux_workshop
+arg: ../Untitled.ipynb
+arg: ../functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*.ipynb
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../Untitled.ipynb
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*func
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/var/folders/5v/g3zxt_7d64g3sd_56bzpqbvh0000gn/T/tmp.NMkSxHxJ9A.zsh:1: no matches found: ../*func
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*func*
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../**/*.org
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../Linux_workshop/gen.org
+arg: ../functional_workshop/Racket.org
+arg: ../functional_workshop/Scala.org
+arg: ../functional_workshop/gen.org
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*workshop
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../Linux_workshop
+arg: ../functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*workshop~*func*
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: ../Linux_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+words=(${(@ps.\n.)"$(cat /usr/share/dict/words)"})
+#+end_src
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${(@M)words:#zoo*gy}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: zoogeology
+arg: zoology
+arg: zoonosology
+arg: zoopaleontology
+arg: zoopathology
+arg: zoophysiology
+arg: zoophytology
+arg: zoopsychology
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${(@M)words:#z??}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: zac
+arg: zad
+arg: zag
+arg: zak
+arg: zar
+arg: zat
+arg: zax
+arg: zed
+arg: zee
+arg: zel
+arg: zer
+arg: zig
+arg: zip
+arg: zoa
+arg: zoo
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+#: without 'M', the glob acts as a filter
+arger "${(@)words:#??*}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: A
+arg: a
+arg: B
+arg: b
+arg: C
+arg: c
+arg: D
+arg: d
+arg: E
+arg: e
+arg: F
+arg: f
+arg: G
+arg: g
+arg: H
+arg: h
+arg: I
+arg: i
+arg: J
+arg: j
+arg: K
+arg: k
+arg: L
+arg: l
+arg: M
+arg: m
+arg: N
+arg: n
+arg: O
+arg: o
+arg: P
+arg: p
+arg: Q
+arg: q
+arg: R
+arg: r
+arg: S
+arg: s
+arg: T
+arg: t
+arg: U
+arg: u
+arg: V
+arg: v
+arg: W
+arg: w
+arg: X
+arg: x
+arg: Y
+arg: y
+arg: Z
+arg: z
+#+end_results
+
+** conditionals
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+i=0
+if (( i < 10 ))
+then
+  echo "i < 10"
+fi
+#+end_src
+
+#+RESULTS:
+#+begin_results
+true
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+if (( i > 10 ))
+then
+  echo "i > 10"
+else
+  echo 'in the else clause'
+fi
+#+end_src
+
+#+RESULTS:
+#+begin_results
+in the else clause
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+tldr '[['
+#+end_src
+
+#+RESULTS:
+#+begin_results
+
+  Check file types and compare values.
+  Returns 0 if the condition evaluates to true, 1 if it evaluates to false.
+  More information: <https://www.gnu.org/software/bash/manual/bash.html#index-_005b_005b>.
+
+  Test if a given variable is equal/not equal to the specified string:
+
+      [[ $variable ==|!= "string" ]]
+
+  Test if a given string conforms the specified glob/regex:
+
+      [[ $variable ==|=~ pattern ]]
+
+  Test if a given variable is [eq]ual/[n]ot [e]qual/[g]reater [t]han/[l]ess [t]han/[g]reater than or [e]qual/[l]ess than or [e]qual to the specified number:
+
+      [[ $variable -eq|ne|gt|lt|ge|le integer ]]
+
+  Test if the specified variable has a [n]on-empty value:
+
+      [[ -n $variable ]]
+
+  Test if the specified variable has an empty value:
+
+      [[ -z $variable ]]
+
+  Test if the specified [f]ile exists:
+
+      [[ -f path/to/file ]]
+
+  Test if the specified [d]irectory exists:
+
+      [[ -d path/to/directory ]]
+
+  Test if the specified file or directory [e]xists:
+
+      [[ -e path/to/file_or_directory ]]
+
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+a='oranges'
+
+if [[ "$a" == oranges ]]
+then
+  echo y
+else
+  echo n
+fi
+#+end_src
+
+#+RESULTS:
+#+begin_results
+y
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+a='oranges'
+
+if [[ "$a" == apples ]]
+then
+  echo y
+else
+  echo n
+fi
+#+end_src
+
+#+RESULTS:
+#+begin_results
+n
+#+end_results
+
+** while loops
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+i=0
+while (( i < 10 ))
+do
+  i=$(( i + 1 ))
+  typeset -p i
+done
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -g i=1
+typeset -g i=2
+typeset -g i=3
+typeset -g i=4
+typeset -g i=5
+typeset -g i=6
+typeset -g i=7
+typeset -g i=8
+typeset -g i=9
+typeset -g i=10
+#+end_results
+
+** functions
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+bar() {
+  local input_1="$1" input_2="$2" input_rest=("${@[2,-1]}")
+  typeset -p input_1 input_2 input_rest
+}
+
+bar one two three four five six
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset input_1=one
+typeset input_2=two
+typeset -a input_rest=( two three four five six )
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+bar one\ two 'three four' "" five six
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset input_1='one two'
+typeset input_2='three four'
+typeset -a input_rest=( 'three four' '' five six )
+#+end_results
+
+** redirection
+*** stdin, stdout, stderr
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo_error() {
+  local input_all=("$@")
+
+  echo "${input_all[@]}" >&2
+}
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$(mktemp -d)" #: goes to a temporary directory
+
+{
+  echo 'this is in stdout'
+
+  echo_error 'this is in stderr'
+} > stdout.txt 2> stderr.txt
+
+bat --decorations=always --style=header -- stdout.txt stderr.txt
+#+end_src
+
+#+RESULTS:
+#+begin_results
+File: stdout.txt
+this is in stdout
+
+File: stderr.txt
+this is in stderr
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $'1\n2\n3' | cat -n
+#+end_src
+
+#+RESULTS:
+#+begin_results
+     1	1
+     2	2
+     3	3
+#+end_results
+
+
+*** redirection to files
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$(mktemp -d)" #: goes to a temporary directory
+
+some_file="f-00.txt"
+
+for i in {1..10}
+do
+  echo "$i" >> "$some_file"
+done
+
+cat "$some_file"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cat /usr/share/dict/words | head -n 10
+#+end_src
+
+#+RESULTS:
+#+begin_results
+A
+a
+aa
+aal
+aalii
+aam
+Aani
+aardvark
+aardwolf
+Aaron
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+head -n 10 < /usr/share/dict/words
+#+end_src
+
+#+RESULTS:
+#+begin_results
+A
+a
+aa
+aal
+aalii
+aam
+Aani
+aardvark
+aardwolf
+Aaron
+#+end_results
+
+*** advanced piping examples
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$(mktemp -d)" #: goes to a temporary directory
+
+names=( 'steins gate' 'hunterxhunter' 'another' 'death note' "king's ranking" )
+{
+  for name in ${(@)names} ; do
+    #: `reval-memoi kitsu.js` is a blackbox in this tutorial
+    reval-memoi kitsu.js "$name" | jq -re '.data[0] | (.canonicalTitle + ": " + .averageRating)'
+  done
+} > pipe_2 \
+| perl -e 'print(sort({ (split(":", $a))[-1] <=> (split(":", $b))[-1] } <>))' > pipe_3 \
+| tac > pipe_4 \
+| cat -n > pipe_5
+
+bat --decorations=always --style=header -- pipe_*
+#+end_src
+
+#+RESULTS:
+#+begin_results
+File: pipe_2
+Steins;Gate: 82.17
+Hunter x Hunter Movie 2: The Last Mission: 71.52
+Another: 75.51
+Death Note: 83.59
+Ousama Ranking: 82.11
+
+File: pipe_3
+Hunter x Hunter Movie 2: The Last Mission: 71.52
+Another: 75.51
+Ousama Ranking: 82.11
+Steins;Gate: 82.17
+Death Note: 83.59
+
+File: pipe_4
+Death Note: 83.59
+Steins;Gate: 82.17
+Ousama Ranking: 82.11
+Another: 75.51
+Hunter x Hunter Movie 2: The Last Mission: 71.52
+
+File: pipe_5
+     1  Death Note: 83.59
+     2  Steins;Gate: 82.17
+     3  Ousama Ranking: 82.11
+     4  Another: 75.51
+     5  Hunter x Hunter Movie 2: The Last Mission: 71.52
+#+end_results
+
 
 * navigation
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -100,6 +989,10 @@ README.md
 bkmeans
 setup.py
 #+end_results
+
+#+begin_example zsh
+git pull origin main
+#+end_example
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 cd "$d/bkmeans"
@@ -297,6 +1190,11 @@ git ls-files --unmerged
 #+RESULTS:
 #+begin_results
 #+end_results
+
+#+begin_example zsh
+git push origin branch_m
+#+end_example
+
 
 ** @interactive =git rebase -i 'HEAD~4'=
 Switch to the main branch first, as the last commit resolves a conflict which will not go over well in the rebase.

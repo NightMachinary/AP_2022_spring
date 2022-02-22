@@ -27,7 +27,27 @@ sudo apt install -y tldr #: the Haskell tldr client
 
 *** =make= -> [[https://github.com/casey/just/][GitHub - casey/just: 🤖 Just a command runner]]
 
-* zsh
+*** =screen= -> [[https://github.com/tmux/tmux][GitHub - tmux/tmux: tmux source code]]
+
+**** [[https://tmate.io/][tmate • Instant terminal sharing]]
+
+*** [[https://github.com/junegunn/fzf][GitHub - junegunn/fzf: A command-line fuzzy finder]]
+
+**** [[https://github.com/Aloxaf/fzf-tab][GitHub - Aloxaf/fzf-tab: Replace zsh's default completion selection menu with fzf!]]
+
+** starter packs
+*** =zsh=
+**** [[https://github.com/ohmyzsh/ohmyzsh][GitHub - ohmyzsh/ohmyzsh: 🙃 A delightful community-driven (with 2,000+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, h...]]
+
+*** =emacs=
+**** [[https://github.com/hlissner/doom-emacs][GitHub - hlissner/doom-emacs: An Emacs framework for the stubborn martian hacker]]
+
+** package managers
+*** [[https://docs.brew.sh/Homebrew-on-Linux][Homebrew on Linux — Homebrew Documentation]]
+
+*** [[https://nixos.org/nix/manual/][nix]]
+
+* =zsh=
 ** install
 #+begin_example zsh
 sudo apt install -y zsh

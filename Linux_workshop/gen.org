@@ -1,7 +1,38 @@
 #+TITLE: Linux_workshop/gen
 
+* *links*
+** [[https://github.com/ketancmaheshwari/lisa19/raw/master/LPT_LISA.pdf][a concise guide to important Linux concepts]]
+
+** Perl does =sed= and =awk= both, better
+*** https://catonmat.net/ftp/perl1line.txt
+
+** "modern" Unix commands
+*** =grep= -> [[https://github.com/BurntSushi/ripgrep][GitHub - BurntSushi/ripgrep: ripgrep recursively searches directories for a regex pattern while respecting your gitignore]]
+#+begin_example zsh
+sudo apt-get install -y ripgrep
+#+end_example
+
+*** =find= -> [[https://github.com/sharkdp/fd][GitHub - sharkdp/fd: A simple, fast and user-friendly alternative to 'find']]
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+sudo apt-get install -y fd-find
+#+end_src
+
+*** =man= && =info= && [[https://github.com/tldr-pages/tldr][GitHub - tldr-pages/tldr: 📚 Collaborative cheatsheets for console commands]]
+#+begin_example zsh
+sudo apt install -y tldr #: the Haskell tldr client
+#+end_example
+
+**** [[https://github.com/dbrgn/tealdeer][GitHub - dbrgn/tealdeer: A very fast implementation of tldr in Rust.]]
+***** [[https://dbrgn.github.io/tealdeer/installing.html][Installing - Tealdeer User Manual]]
+
+*** =make= -> [[https://github.com/casey/just/][GitHub - casey/just: 🤖 Just a command runner]]
 
 * zsh
+** install
+#+begin_example zsh
+sudo apt install -y zsh
+#+end_example
+
 ** [[nightNotes:private/symlinks/dirs/learnxinyminutes-docs/bash.org][learnxinyminutes-docs/bash]]
 
 ** arguments, quoting
@@ -873,10 +904,11 @@ Aaron
 cd "$(mktemp -d)" #: goes to a temporary directory
 
 names=( 'steins gate' 'hunterxhunter' 'another' 'death note' "king's ranking" )
+
 {
   for name in ${(@)names} ; do
     #: `reval-memoi kitsu.js` is a blackbox in this tutorial
-    reval-memoi kitsu.js "$name" | jq -re '.data[0] | (.canonicalTitle + ": " + .averageRating)'
+    reval-memoi kitsu.js "$name" | jq -re '.data[] | (.canonicalTitle + ": " + .averageRating)'
   done
 } > pipe_2 \
 | perl -e 'print(sort({ (split(":", $a))[-1] <=> (split(":", $b))[-1] } <>))' > pipe_3 \

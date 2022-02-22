@@ -1248,9 +1248,11 @@ git push origin branch_m
 #+end_example
 
 
-** @interactive =git rebase -i 'HEAD~4'=
+** @interactive
+*** =git rebase -i 'HEAD~4'=
 Switch to the main branch first, as the last commit resolves a conflict which will not go over well in the rebase.
 
+*** =git add --patch=
 
 * =fd=
 #+begin_src bsh.dash :results verbatim :exports both :wrap results

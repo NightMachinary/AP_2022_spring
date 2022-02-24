@@ -60,7 +60,7 @@ sudo apt install -y zsh
 arger() { #: ignore the implementation for now
   for arg in "$@"
   do
-    print -r -- "arg: ${arg}"
+    print -r -- "arg: \$${arg}\$"
   done
 }
 #+end_src
@@ -75,8 +75,8 @@ arger hello world
 
 #+RESULTS:
 #+begin_results
-arg: hello
-arg: world
+arg: $hello$
+arg: $world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -85,7 +85,7 @@ arger 'hello world'
 
 #+RESULTS:
 #+begin_results
-arg: hello world
+arg: $hello world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -94,7 +94,7 @@ arger "hello world"
 
 #+RESULTS:
 #+begin_results
-arg: hello world
+arg: $hello world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -103,7 +103,7 @@ arger hello\ world
 
 #+RESULTS:
 #+begin_results
-arg: hello world
+arg: $hello world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -112,8 +112,8 @@ arger 'hello' 'world'
 
 #+RESULTS:
 #+begin_results
-arg: hello
-arg: world
+arg: $hello$
+arg: $world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -123,8 +123,8 @@ world'
 
 #+RESULTS:
 #+begin_results
-arg: hello
-world
+arg: $hello
+world$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -133,7 +133,7 @@ arger 'hello "world"'
 
 #+RESULTS:
 #+begin_results
-arg: hello "world"
+arg: $hello "world"$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -142,7 +142,7 @@ arger "hello 'world'"
 
 #+RESULTS:
 #+begin_results
-arg: hello 'world'
+arg: $hello 'world'$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -151,7 +151,7 @@ arger 'hello \world\'
 
 #+RESULTS:
 #+begin_results
-arg: hello \world\
+arg: $hello \world\$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -160,7 +160,7 @@ arger "hello \world\"
 
 #+RESULTS:
 #+begin_results
-/var/folders/5v/g3zxt_7d64g3sd_56bzpqbvh0000gn/T/tmp.P7gF3pAOFj.zsh:1: unmatched "
+/var/folders/5v/g3zxt_7d64g3sd_56bzpqbvh0000gn/T/tmp.ig1u2LbbML.zsh:1: unmatched "
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -169,8 +169,18 @@ arger "hello \\world\\"
 
 #+RESULTS:
 #+begin_results
-arg: hello \world\
+arg: $hello \world\$
 #+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "hello \"world\""
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $hello "world"$
+#+end_results
+
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger
@@ -186,7 +196,7 @@ arger ''
 
 #+RESULTS:
 #+begin_results
-arg:
+arg: $$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -195,18 +205,29 @@ arger '' '' ''
 
 #+RESULTS:
 #+begin_results
-arg:
-arg:
-arg:
+arg: $$
+arg: $$
+arg: $$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
-arger ''\ ''\ ''
+arger 'hello'" "'world'
+# arger 'hello' + " " + 'world'
 #+end_src
 
 #+RESULTS:
 #+begin_results
-arg:
+arg: $hello world$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ''\ ''\ ''
+#: ('' + ' ' + '' + ' ' + '')
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $  $
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -216,16 +237,17 @@ arger \
 
 #+RESULTS:
 #+begin_results
+arg: $ $
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
-arger \  \
+arger \   \
 #+end_src
 
 #+RESULTS:
 #+begin_results
-arg:
-arg:
+arg: $ $
+arg: $$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -234,8 +256,18 @@ arger '1\n2\n3'
 
 #+RESULTS:
 #+begin_results
-arg: 1\n2\n3
+arg: $1\n2\n3$
 #+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "1\n2\n3"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $1\n2\n3$
+#+end_results
+
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger $'1\n2\n3'
@@ -243,9 +275,9 @@ arger $'1\n2\n3'
 
 #+RESULTS:
 #+begin_results
-arg: 1
+arg: $1
 2
-3
+3$
 #+end_results
 
 ** the basic structure of commands
@@ -271,6 +303,68 @@ d=~/tmp/linux_workshop
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger $d
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $/Users/evar/tmp/linux_workshop$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+d2='hello world'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger $d2
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $hello world$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ${=d2}
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $hello$
+arg: $world$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+d3=''
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger $d3
+#> arger
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "$d3"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger "$d"
 #+end_src
 
@@ -287,6 +381,45 @@ typeset -p d
 #+begin_results
 typeset -g d=/Users/evar/tmp/linux_workshop
 #+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+d4='$n|a&*
+        ke'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+typeset -p d4
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -g d4=$'$n|a&*\n        ke'
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+local d5=hi
+typeset -p d5
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset d5=hi
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+integer d6=89
+typeset -p d6
+#+end_src
+
+#+RESULTS:
+#+begin_results
+typeset -i d6=89
+#+end_results
+
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger "Hello, ${d}!"
@@ -320,17 +453,45 @@ arg: /Users/evar/tmp/linux_workshop!
 ** lists
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 foo=( one 't w o' 3 '' 4 )
+#+end_src
 
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger "${foo}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $one t w o 3  4$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger "${foo[@]}"
 #+end_src
 
 #+RESULTS:
 #+begin_results
-arg: one
-arg: t w o
-arg: 3
-arg:
-arg: 4
+arg: $one$
+arg: $t w o$
+arg: $3$
+arg: $$
+arg: $4$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger start"${foo[@]}"end
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $startone$
+arg: $t w o$
+arg: $3$
+arg: $$
+arg: $4end$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -378,7 +539,61 @@ arg: t w o
 arg: 3
 #+end_results
 
+** hashmaps
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+typeset -A h1
+h1[hi]='wood'
+h1[one]=89
+
+echo "${h1[hi]}"
+# typeset -p h1
+#+end_src
+
+#+RESULTS:
+#+begin_results
+wood
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $functions[arger]
+#+end_src
+
+#+RESULTS:
+#+begin_results
+	for arg in "$@"
+	do
+		print -r -- "arg: \$${arg}\$"
+	done
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $commands[grep]
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/usr/bin/grep
+#+end_results
+
 ** command substitution
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $PWD
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/Base/_Code/uni/AP_2022_spring/Linux_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+realpath ${PWD}/..
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/Users/evar/Base/_Code/uni/AP_2022_spring
+#+end_results
+
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 ls ..
 #+end_src
@@ -410,9 +625,9 @@ arger "${dirs[@]}"
 
 #+RESULTS:
 #+begin_results
-arg: Linux_workshop
+arg: $Linux_workshop
 Untitled.ipynb
-functional_workshop
+functional_workshop$
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -426,14 +641,28 @@ typeset -g -a dirs=( Linux_workshop Untitled.ipynb functional_workshop )
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
+a="1,2,3,4"
+
+arger "${(@s/,/)a}"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $1$
+arg: $2$
+arg: $3$
+arg: $4$
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger "${dirs[@]}"
 #+end_src
 
 #+RESULTS:
 #+begin_results
-arg: Linux_workshop
-arg: Untitled.ipynb
-arg: functional_workshop
+arg: $Linux_workshop$
+arg: $Untitled.ipynb$
+arg: $functional_workshop$
 #+end_results
 
 ** foreach loops
@@ -514,6 +743,15 @@ arger ../*func*
 #+RESULTS:
 #+begin_results
 arg: ../functional_workshop
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger ../*.org
+#+end_src
+
+#+RESULTS:
+#+begin_results
+/var/folders/5v/g3zxt_7d64g3sd_56bzpqbvh0000gn/T/tmp.Q7NacJPbez.zsh:1: no matches found: ../*.org
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -653,8 +891,73 @@ arg: z
 
 ** conditionals
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo hi
+echo "return code: $?"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+hi
+return code: 0
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+touch /hi
+echo "return code: $?"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+touch: /hi: Read-only file system
+return code: 1
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+i=89
+(( i > 100 ))
+echo "return code: $?"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+return code: 1
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+i=89
+(( i < 100 ))
+echo "return code: $?"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+return code: 0
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+i=89
+echo $(( i > 100 ))
+# echo 0
+#+end_src
+
+#+RESULTS:
+#+begin_results
+0
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $(( sin(i) ))
+#+end_src
+
+#+RESULTS:
+#+begin_results
+0.86006940581245328
+#+end_results
+
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
 i=0
-if (( i < 10 ))
+if (( i < 10 )) # => if 0
 then
   echo "i < 10"
 fi
@@ -662,11 +965,11 @@ fi
 
 #+RESULTS:
 #+begin_results
-true
+i < 10
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
-if (( i > 10 ))
+if (( i > 10 )) # => if 1
 then
   echo "i > 10"
 else
@@ -743,6 +1046,20 @@ y
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 a='oranges'
 
+setopt rematchpcre
+
+[[ "$a" =~ '^ora.*s' ]]
+echo "return code: $?"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+return code: 0
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+a='oranges'
+
 if [[ "$a" == apples ]]
 then
   echo y
@@ -783,7 +1100,8 @@ typeset -g i=10
 ** functions
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 bar() {
-  local input_1="$1" input_2="$2" input_rest=("${@[2,-1]}")
+  local input_1="$1" input_2="$2" input_rest=("${@[3,-1]}")
+
   typeset -p input_1 input_2 input_rest
 }
 
@@ -794,7 +1112,7 @@ bar one two three four five six
 #+begin_results
 typeset input_1=one
 typeset input_2=two
-typeset -a input_rest=( two three four five six )
+typeset -a input_rest=( three four five six )
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -805,16 +1123,45 @@ bar one\ two 'three four' "" five six
 #+begin_results
 typeset input_1='one two'
 typeset input_2='three four'
-typeset -a input_rest=( 'three four' '' five six )
+typeset -a input_rest=( '' five six )
 #+end_results
+
+** aliases
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+alias rm='rm -i'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+unalias rm
+#+end_src
+
+#+RESULTS:
+#+begin_results
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+rm() {
+    command rm -i "$@"
+}
+#+end_src
 
 ** redirection
 *** stdin, stdout, stderr
+#+begin_example zsh
+&1
+&2
+
+#+end_example
+
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 echo_error() {
   local input_all=("$@")
 
-  echo "${input_all[@]}" >&2
+  echo "${input_all[@]}" 1>&2
 }
 #+end_src
 
@@ -829,7 +1176,7 @@ cd "$(mktemp -d)" #: goes to a temporary directory
   echo 'this is in stdout'
 
   echo_error 'this is in stderr'
-} > stdout.txt 2> stderr.txt
+} 1> stdout.txt 2> stderr.txt
 
 bat --decorations=always --style=header -- stdout.txt stderr.txt
 #+end_src
@@ -844,6 +1191,28 @@ this is in stderr
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $'1\n2\n3'
+#+end_src
+
+#+RESULTS:
+#+begin_results
+1
+2
+3
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $'1\n2\n3' | cat
+#+end_src
+
+#+RESULTS:
+#+begin_results
+1
+2
+3
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
 echo $'1\n2\n3' | cat -n
 #+end_src
 
@@ -854,6 +1223,16 @@ echo $'1\n2\n3' | cat -n
      3	3
 #+end_results
 
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+echo $'one\ntwo\nthree' | cat -n
+#+end_src
+
+#+RESULTS:
+#+begin_results
+     1	one
+     2	two
+     3	three
+#+end_results
 
 *** redirection to files
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
@@ -861,9 +1240,27 @@ cd "$(mktemp -d)" #: goes to a temporary directory
 
 some_file="f-00.txt"
 
+for i in {1..10} # => 1 2 3 4 5 6 7 8 9 10
+do
+  echo "$i" 1> "$some_file"
+done
+
+cat "$some_file"
+#+end_src
+
+#+RESULTS:
+#+begin_results
+10
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+cd "$(mktemp -d)" #: goes to a temporary directory
+
+some_file="f-00.txt"
+
 for i in {1..10}
 do
-  echo "$i" >> "$some_file"
+  echo "$i" 1>> "$some_file"
 done
 
 cat "$some_file"
@@ -928,7 +1325,7 @@ names=( 'steins gate' 'hunterxhunter' 'another' 'death note' "king's ranking" )
 {
   for name in ${(@)names} ; do
     #: `reval-memoi kitsu.js` is a blackbox in this tutorial
-    reval-memoi kitsu.js "$name" | jq -re '.data[] | (.canonicalTitle + ": " + .averageRating)'
+    reval-memoi kitsu.js "$name" | jq -re '.data[0] | (.canonicalTitle + ": " + .averageRating)'
   done
 } > pipe_2 \
 | perl -e 'print(sort({ (split(":", $a))[-1] <=> (split(":", $b))[-1] } <>))' > pipe_3 \

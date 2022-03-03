@@ -1,0 +1,95 @@
+#+TITLE: Linux_workshop/exercises
+
+* git
+** fib
+
+۱. یک ریپوی گیت ایجاد کنید که برنچ‌های زیر را داشته‌باشد:
+
+fib_1_2
+fib_2_3
+fib_4_5
+...
+fib_2^n_(2^n)+1
+...
+fib_2048_2049
+
+در هر برنچ، هزار کامیت می‌خواهیم داشته‌باشیم که پیام کامیت iام
+
+added the ${i}th number
+
+باشد و در آن کامیت صرفا یک فایل با اسم
+
+${i}.txt
+
+موجود باشد که محتوای آن عدد iام یک دنباله فیبوناچی است که دو عدد اول دنباله از اسم برنچ گرفته‌شده‌است. مثلا در برنچ fib_4_5 چند کامیت اول این‌ها خواهند بود:
+
+added the 1st number:
+1.txt: 4
+
+added the 2nd number:
+2.txt: 5
+
+added the 3rd number:
+3.txt: 9
+
+added the 4th number:
+4.txt: 14
+
+در مثال بالا، توجه کنید که
+
+${i}th
+
+برای اعداد یک و دو و سه، حالت استثنایی دارد.
+
+* explain
+#+begin_quote
+
+کد  bash زیر را کامل توضیح دهید. نحوه پیدا کردن عملکرد هر دستور را نیز بنویسید. مثلا برای فهمیدن کارکرد
+
+-p
+
+در دستور perl -pe، می‌توان man perlrun را باز کرد و در آن
+
+^\s*-p
+
+را جست‌وجو نمود (برای جست‌وجو از دکمه / می‌توان استفاده کرد).
+
+توجه کنید که ورژن bash تان آپدیت باشد.
+
+#+end_quote
+
+** 1
+#+begin_example zsh
+# < <(python '-c' '[print(i) for i in range(10,1000)]') grep -v '^8' \
+
+python '-c' '[print(i) for i in range(10,1000)]' \
+  | grep -v '^8' \
+  | (
+    readarray -t y
+
+    for i in "${y[@]}" ; do
+    # for i in ${(@f)"$(cat)"} ; do
+      if (( i % 7 == 0 )) && [[ "$i" == ?2* && ! "$i" == 623 ]] ; then
+       echo -En "$i"$'\n'
+      fi
+    done
+    ) \
+  | tee result_1 \
+  | perl -pe 's/^(\d{2})$/0${1}/g'
+#+end_example
+
+#+begin_example bash
+python '-c' '[print(i) for i in range(10,1000)]' \
+  | grep -v '^8' \
+  | (
+    readarray -t y
+
+    for i in "${y[@]}" ; do
+      if (( i % 7 == 0 )) && [[ "$i" == ?2* && ! "$i" == 623 ]] ; then
+       echo -n "$i"$'\n'
+      fi
+    done
+    ) \
+  | tee result_1 \
+  | perl -pe 's/^(\d{2})$/0${1}/g'
+#+end_example

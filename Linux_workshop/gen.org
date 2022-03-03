@@ -212,7 +212,7 @@ arg: $$
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
 arger 'hello'" "'world'
-# arger 'hello' + " " + 'world'
+#: arger('hello' + " " + 'world')
 #+end_src
 
 #+RESULTS:
@@ -241,7 +241,18 @@ arg: $ $
 #+end_results
 
 #+begin_src bsh.dash :results verbatim :exports both :wrap results
-arger \   \
+arger ' ' ' '
+#+end_src
+
+#+RESULTS:
+#+begin_results
+arg: $ $
+arg: $ $
+#+end_results
+
+#+begin_src bsh.dash :results verbatim :exports both :wrap results
+arger \    \
+#: The result here is wrong (probably a brish bug).
 #+end_src
 
 #+RESULTS:

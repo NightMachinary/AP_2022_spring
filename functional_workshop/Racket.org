@@ -142,7 +142,7 @@
 : (vec '(6 24))
 
 * continuations
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both
 (define *k* #f)
 
 (call-with-continuation-prompt
@@ -191,8 +191,7 @@
 : 91
 
 
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
-(let ((a 0))
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both(let ((a 0))
   (define *k* #f)
   (define *c* 0)
 
@@ -232,8 +231,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
-(let ((a 0))
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both(let ((a 0))
   (define *k* #f)
   (define *c* 0)
 
@@ -268,8 +266,7 @@
 : 10
 :END:
 
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
-(let ((a 0))
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both(let ((a 0))
   (define *k* #f)
   (define *c* 0)
 
@@ -309,8 +306,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
-(let ((a 0))
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both(let ((a 0))
   (define *k* #f)
   (define *c* 0)
 
@@ -353,8 +349,7 @@
 : 30
 :END:
 
-#+begin_src jupyter-racket :exports both :session r1 :pandoc t
-(let ((a 0))
+#+begin_src jupyter-racket :session r1 :pandoc t :exports both(let ((a 0))
   (define *k* #f)
   (define *c* 0)
 
